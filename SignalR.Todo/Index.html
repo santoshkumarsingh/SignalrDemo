@@ -1,0 +1,56 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+
+    
+    <script src="Scripts/jquery-1.9.1.js"></script>
+    <script src="Scripts/jquery.signalR-2.2.0.js"></script>
+    <script src="Scripts/knockout-3.2.0.js"></script>
+    <script src="Scripts/Todo.js"></script>
+    <script src="signalr/hubs"></script>
+    <link href="Content/bootstrap.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="container">
+        <div class="form-group">
+            <label for="txtTask"></label>
+            <input type="text" name="txtTask" class="form-control" data-bind="value:newTask" />
+        </div>
+        <div class="form-group">
+            <input type="submit" class="btn btn-primary" value="Add Task" data-bind="click:addTask" />
+        </div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody data-bind="foreach:tasks">
+                <tr>
+                    <td data-bind="css:{finished:finished}">
+                        <div>
+                            <input type="checkbox" data-bind="checked:finished" /><span data-bind="text:title" />
+                        </div>
+                    </td>
+                    <td>
+                        <a href="#" data-bind="click:remove" class="glyphicon glyphicon-trash" />
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <hr>
+        <div>
+            Completed Task:&nbsp; <span class="label label-success" data-bind="text:total().length"></span>
+
+        </div>
+        <div>
+            Item Pending:&nbsp;<span class="label label-danger" data-bind="text:itemsPending().length">
+
+            </span>
+
+        </div>
+    </div>
+</body>
+</html>
