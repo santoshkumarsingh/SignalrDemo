@@ -51,7 +51,7 @@ var dataService = (function () {
 })();
 function TodoItem(id, title, finished) {
     var self = this;
-    var updating = true;
+    var updating = false;
     self.id = id;
     self.title = ko.observable(title);
     self.finished = ko.observable(finished);
@@ -66,6 +66,7 @@ function TodoItem(id, title, finished) {
     };
 
     self.finished.subscribe(function () {
+        alert("sfsdf");
         if (!updating) {
             dataService.updateTask(self);
         }
@@ -87,7 +88,12 @@ function ViewModel() {
     self.removeTask = function (id) {
         self.tasks.remove(function (item) { return item.id === id; });
     }
-
+    self.update = function (id, title, finished) {
+        var oldItem = ko.utils.arrayFirst(self.tasks(), function (i) { return i.id === id; });
+        if (oldItem) {
+            oldItem.update(title, finished);
+        }
+    };
     self.total = ko.computed(function () {
         return ko.utils.arrayFilter(self.tasks(), function (item) {
             return item.finished() == true;
@@ -117,6 +123,13 @@ $(document).ready(function () {
     hub.client.delteTask = function (id) {
         viewModel.removeTask(id);
     };
+    hub.client.deleteItem = function (id) {
+        viewModel.removeTask(id);
+    };
+    hub.updateItem = function (item) {
+        viewModel.update(item.ID, item.Title, item.Finished);
+    };
+
     $.connection.hub.start();
 
     $.get("/api/todo", function (items) {
