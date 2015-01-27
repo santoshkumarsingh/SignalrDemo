@@ -16,7 +16,12 @@ namespace SignalR.Todo.Controllers
     }
     public class TodoController : ApiController
     {
+        
         private List<TodoItem> _list;
+        private  int NextId()
+        {
+            return _list.Max(x => x.id) + 1;
+        }
         public TodoController()
         {
             _list = new List<TodoItem>()
@@ -32,19 +37,19 @@ namespace SignalR.Todo.Controllers
             
             return _list;
         }
-        public TodoItem Post(TodoItem post)
+        public TodoItem Post(TodoItem todoItem)
         {
-            _list.Add(post);
-            
-            context.Clients.All.getTodo(post);
-            return post;
+            todoItem.id = NextId();
+            _list.Add(todoItem);
+            context.Clients.All.addTask(todoItem);
+            return todoItem;
 
         }
         public void Delete(int id)
         {
             var item = _list.Find(x => x.id == id);
             _list.Remove(item);
-            context.Clients.All.removeClient(id);
+            context.Clients.All.delteTask(id);
 
         }
     }

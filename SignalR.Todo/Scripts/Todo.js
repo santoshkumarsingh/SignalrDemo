@@ -34,7 +34,7 @@ var dataService = (function () {
     var remove = function (data) {
         return $.ajax({
             type: "DELETE",
-            url: '/api/todo/' + data().id,
+            url: '/api/todo/' + data.id,
 
             dataType: "json",
             contentType: "application/json"
@@ -84,9 +84,10 @@ function ViewModel() {
     self.add = function (id, title, finished) {
         self.tasks.push(new TodoItem(id, title, finished));
     };
-    self.removeTask = function (task) {
-        self.tasks.remove(task);
+    self.removeTask = function (id) {
+        self.tasks.remove(function (item) { return item.id === id; });
     }
+
     self.total = ko.computed(function () {
         return ko.utils.arrayFilter(self.tasks(), function (item) {
             return item.finished() == true;
@@ -110,8 +111,11 @@ $(document).ready(function () {
 
     ko.applyBindings(viewModel);
 
-    hub.client.getTodo = function (item) {
+    hub.client.addTask = function (item) {
         viewModel.add(item.id, item.title, item.finished);
+    };
+    hub.client.delteTask = function (id) {
+        viewModel.removeTask(id);
     };
     $.connection.hub.start();
 
