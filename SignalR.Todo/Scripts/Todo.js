@@ -127,7 +127,7 @@ $(document).ready(function () {
         viewModel.removeTask(id);
     };
     hub.updateItem = function (item) {
-        viewModel.update(item.ID, item.Title, item.Finished);
+        viewModel.update(item.id, item.title, item.finished);
     };
 
     $.connection.hub.start();
