@@ -20,19 +20,18 @@ namespace SignalR.Todo.Controllers
     public class TodoController : ApiController
     {
 
-        private List<TodoItem> db;
+        private static List<TodoItem> db = new List<TodoItem>
+        {
+          new TodoItem{id=0,title="Hello world",finished=false},
+                new TodoItem{id=1,title="Book cab for airport",finished=true},
+        };
         private int NextId()
         {
             return db.Max(x => x.id) + 1;
         }
         public TodoController()
         {
-            db = new List<TodoItem>()
-            {
-                new TodoItem{id=1,title="Hello world",finished=false},
-                new TodoItem{id=2,title="Book cab for airport",finished=true},
-            };
-
+           
         }
         IHubContext context = GlobalHost.ConnectionManager.GetHubContext<TodoHub>();
         public List<TodoItem> Get()
@@ -56,13 +55,13 @@ namespace SignalR.Todo.Controllers
 
                 // Return the new item, inside a 201 response
                 var response = Request.CreateResponse(HttpStatusCode.Created, todoItem);
-                string link = Url.Link("apiRoute", new { controller = "todo", id = todoItem.id });
+                string link = Url.Link("DefaultApi", new { controller = "todo", id = todoItem.id });
                 response.Headers.Location = new Uri(link);
                 return response;
             }
 
         }
-        public TodoItem PutUpdatedToDoItem(int id, TodoItem item)
+        public TodoItem PutUpdatedToDoItem(int id, [FromBody] TodoItem item)
         {
             lock (db)
             {
@@ -73,12 +72,16 @@ namespace SignalR.Todo.Controllers
                         Request.CreateResponse(HttpStatusCode.NotFound)
                     );
                 // Update the editable fields and save back to the "database"
-                toUpdate.title = item.title;
-                toUpdate.finished = item.finished;
+                if (item != null)
+                {
+                    toUpdate.title = item.title;
+                    toUpdate.finished = item.finished;
+                }
 
                 // Notify the connected clients
 
                 context.Clients.All.updateItem(toUpdate);
+            
 
                 // Return the updated item
                 return toUpdate;
@@ -94,10 +97,10 @@ namespace SignalR.Todo.Controllers
 
                 // Notify the connected clients
 
-                context.Clients.All.delteTask(id);
+                context.Clients.All.deleteTask(id);
                 return Request.CreateResponse(HttpStatusCode.OK);
             }
-            
+
 
         }
     }

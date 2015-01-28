@@ -22,11 +22,12 @@ var dataService = (function () {
             contentType: "application/json"
         });
     };
-    var update = function (data) {
+    var update = function (item) {
+        console.log(item);
         return $.ajax({
+            url: "/api/todo/" + item.id,
+            data:ko.toJSON(item),
             type: "PUT",
-            url: url,
-            data: data,
             dataType: "json",
             contentType: "application/json"
         });
@@ -68,6 +69,7 @@ function TodoItem(id, title, finished) {
     self.finished.subscribe(function () {
         
         if (!updating) {
+        
             dataService.updateTask(self);
         }
     });
@@ -120,13 +122,11 @@ $(document).ready(function () {
     hub.client.addTask = function (item) {
         viewModel.add(item.id, item.title, item.finished);
     };
-    hub.client.delteTask = function (id) {
+   
+    hub.client.deleteTask = function (id) {
         viewModel.removeTask(id);
     };
-    hub.client.deleteItem = function (id) {
-        viewModel.removeTask(id);
-    };
-    hub.updateItem = function (item) {
+    hub.client.updateItem = function (item) {
         viewModel.update(item.id, item.title, item.finished);
     };
 
