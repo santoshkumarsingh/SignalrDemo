@@ -66,7 +66,7 @@ function TodoItem(id, title, finished) {
     };
 
     self.finished.subscribe(function () {
-        alert("sfsdf");
+        
         if (!updating) {
             dataService.updateTask(self);
         }
